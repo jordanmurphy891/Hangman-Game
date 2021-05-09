@@ -1,0 +1,228 @@
+import java.util.Scanner;
+import java.util.Random;
+
+public class Hangman
+{
+	public static void main(String args[])
+	{
+		Scanner sc = new Scanner(System.in);
+		boolean keepPlaying=true, wordFound=false;
+
+		System.out.println("Welcome to Hangman 2.0!");
+		
+		String [] easyArray = {"wolf","clue","hill","rule","cap","dog","cast","slab","rate","pig","suit","lot","hot","soup","damn","mile","bike","drag","ego","rich"};
+		String [] medArray = {"houses","display","applied","record","likely","bedroom","movement","scatter","orthodox","predator","output","ground","minute","global","despair","miserable","appear","imperial","dialogue","complex"};
+		String [] hardArray = {"interference","reproduction","astonishing","compensation","characteristic","identification","prescription","infrastructure","extraterrestrial","preoccupation","intelligence","demonstration","responsibility","superintendent","inappropriate","revolutionary","confrontation","comprehensive","recommendation","rehabilitation"}; 
+		
+		System.out.println("There are 3 games of which you can choose from: Easy (e), Medium (m), Hard (h).");
+		System.out.println("The harder the game, the more letters there will be for you to guess.");
+
+		while(keepPlaying == true)
+		{
+			int lives=0, originalLives=lives;
+			keepPlaying=true; 
+			wordFound=false; //set back to every time so we can enter inner while loop each time
+			String word = " ";
+			
+			int max = 19; //20 in terms of arrays
+			int min = 0; //1 in terms of arrays
+			int range = max - min + 1;
+			int rand = (int)(Math.random() * range) + min; //random number between 1 and 20 for choosing word
+			
+			System.out.println("Please choose your difficulty: (e/m/h)");
+			
+			char difficulty = sc.next().charAt(0); //method of doing sc.nextChar()
+		    difficulty = Character.toLowerCase(difficulty); //in case user inputs E or M or H
+
+			while(difficulty != 'e' && difficulty != 'm' && difficulty != 'h') //in case the input anything but 'e', 'm' or 'h'
+			{
+				System.out.println("Please enter a valid option: (e/m/h)");
+				difficulty = sc.next().charAt(0);
+			}
+			if(difficulty == 'e')
+			{
+				word = easyArray[rand];
+				lives = word.length()+5; //more lives for easy because its actually harder
+				originalLives = lives;
+			}
+			if(difficulty == 'm')
+			{	
+				word = medArray[rand];
+				lives = word.length()+3;
+				originalLives = lives;
+			}
+			if(difficulty == 'h')
+			{
+				word = hardArray[rand];
+				lives = word.length()+1;
+				originalLives = lives;
+			}
+			
+			char[] wordArray = new char[word.length()]; //make array
+			for (int i = 0; i < word.length(); i++) //fill array with characters from input
+			{
+	    		wordArray[i] = word.charAt(i); //this has our word in an array, easy to work with
+	    	}
+			//lets make a second array, with asterix's. this will be filled with correct guesses
+			char[] answerArray = new char[word.length()]; 
+			for(int i = 0 ; i < answerArray.length ; i++)
+			{
+				answerArray[i] = '*'; 
+			}
+			System.out.println("Awesome! I have picked out a word for you to play with: ");
+			System.out.println(answerArray);
+			System.out.println("Lives: "+lives);
+		
+			while(wordFound == false)
+			{
+				if(guess(word,wordArray, answerArray)) 
+				{
+					//make the answer array into a string for comparison with the guess
+					String answerString = String.valueOf(answerArray);
+
+					//if(count == word.length()) //mistake here, not true?
+					if(answerString.equals(word))
+					{
+						if(lives == originalLives)
+						{
+							System.out.println("Congrats, You won with no lives lost! Well Done");
+						}
+						else //you did loose some lives
+						{
+							System.out.println("Congrats, You Win!!!");
+						}
+						System.out.println("The word was: "+word);
+						System.out.println("Do you want to play again? (y/n)");
+						char playAgain = sc.next().charAt(0);
+					    playAgain = Character.toLowerCase(playAgain); //in case they enter 'Y' or 'N'  
+
+						while(playAgain != 'y' && playAgain != 'n') //in case they enter a character thats not 'Y' or 'N'
+						{
+							System.out.println("Please enter a valid input, 'y' or 'n'");
+							playAgain = sc.next().charAt(0);
+						}
+						if(playAgain == 'y')
+						{
+							System.out.println("Really glad to see you're enjoying the game! Let's go again :)");
+							wordFound = true;
+							break;
+						}
+						if(playAgain == 'n')
+						{	
+							{	
+								System.out.println("Your feedback is really important in improving this game."); //little add on
+								System.out.println("So please rate the game from 1 to 5.");
+								int rating = sc.nextInt();
+								
+								while(rating!=1 && rating!=2 && rating!=3 && rating!=4 && rating!=5)
+								{
+									System.out.println("Please enter a valid number from 1 to 5.");
+									rating = sc.nextInt();
+								}
+								switch(rating)
+								{
+									case(1) : System.out.println("We're sorry you feel this way. We'll be sure to improve our game in the next update!"); break;
+									case(2) : System.out.println("We're sorry you feel this way. We'll be sure to improve our game in the next update!"); break;
+									case(3) : System.out.println("Thanks for your feedback."); break;
+									case(4) : System.out.println("We're so glad you enjoyed the game. Thank you for the feedback."); break;
+									case(5) : System.out.println("We're so glad you enjoyed the game. Thank you for the feedback."); break;
+								}
+
+								System.out.println("Thanks for playing. Until next time :)");
+								keepPlaying = false;
+								break;
+							}
+						}
+					}
+					System.out.println("Well done, you guessed right!");
+					System.out.println( "Lives remaining = "+lives);
+					System.out.println(answerArray);
+				}
+				else
+				{
+					lives--;
+					if(lives == 0)
+					{
+						System.out.println("Unlucky, you lose :( ");
+						System.out.println("The word was: "+word);
+						System.out.println("Do you want to play again? (y/n)");
+						char playAgain = sc.next().charAt(0);
+					    playAgain = Character.toLowerCase(playAgain);   //in case they enter 'Y' or 'N'
+
+						while(playAgain != 'y' && playAgain != 'n')
+						{
+							System.out.println("Please enter a valid input, 'y' or 'n'"); //in case they enter a character thats not 'Y' or 'N'
+							playAgain = sc.next().charAt(0);
+						}
+						if(playAgain == 'y')
+						{
+							System.out.println("Really glad to see you're enjoying the game! Let's go again :)");
+							wordFound = true;
+							break;
+						}
+						if(playAgain == 'n')
+						{	
+							System.out.println("Your feedback is really important in improving this game.");
+							System.out.println("So please rate the game from 1 to 5.");
+							int rating = sc.nextInt();
+							
+							while(rating!=1 && rating!=2 && rating!=3 && rating!=4 && rating!=5)
+							{
+								System.out.println("Please enter a valid number from 1 to 5.");
+								rating = sc.nextInt();
+							}
+							switch(rating)
+							{
+								case(1) : System.out.println("We're sorry you feel this way. We'll be sure to improve our game in every way in the next update!"); break;
+								case(2) : System.out.println("We're sorry you feel this way. We'll be sure to improve our game in every way in the next update!"); break;
+								case(3) : System.out.println("Thanks for your feedback."); break;
+								case(4) : System.out.println("We're so glad you enjoyed the game. Thank you for the feedback."); break;
+								case(5) : System.out.println("We're so glad you enjoyed the game. Thank you for the feedback."); break;
+							}
+							System.out.println("Thanks for playing. Until next time :)");
+							keepPlaying = false;
+							break;
+						}
+					}
+					System.out.println("Unlucky, you guessed wrong!");
+					System.out.println("Lives remaining = "+lives);
+					if(lives == 1)
+					{
+						System.out.println("Be careful, you only have 1 life left!!!");
+					}
+					System.out.println(answerArray);
+				}	
+			}
+		}
+	}
+		public static boolean guess(String word, char[]wordArray, char[]answerArray)
+		{
+			Scanner sc = new Scanner(System.in);
+			System.out.println("Please guess a character.");
+			char guess = sc.next().charAt(0); //way of doing nextChar
+			
+			while(guess!='a'&&guess!='b'&&guess!='c'&&guess!='d'&&guess!='e'&&guess!='f'&&guess!='g'&&guess!='h'&&guess!='i'&&guess!='j'&&guess!='k'&&guess!='l'&&guess!='m'&&guess!='n'&&guess!='o'&&guess!='p'&&guess!='q'&&guess!='r'&&guess!='s'&&guess!='t'&&guess!='u'&&guess!='v'&&guess!='w'&&guess!='x'&&guess!='y'&&guess!='z')
+			{
+				System.out.println("Please enter a valid letter from the alphabet."); 
+				guess = sc.next().charAt(0);
+			}
+		    guess = Character.toLowerCase(guess); //in case they have cap locks on  
+
+			for(int i = 0 ; i < wordArray.length ; i++) //scans through word, one letter at a time
+			{
+				if(guess == wordArray[i]) //if you've guessed letter correctly
+				{
+					for(int j = 0; j < answerArray.length ; j++) //starts moving through answerArray, one asterisk at a time
+					{	
+						while(guess == wordArray[j]) //this accounts for repeating letters
+						{
+							answerArray[j] = guess;
+							break; //breaks out of while loop, enters for loop again, checks next character
+						}
+					}
+					return true; //correct guess
+				}	
+			}
+			return false; //incorrect guess
+		}
+}	
